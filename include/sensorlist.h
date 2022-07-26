@@ -5,6 +5,7 @@
 
 struct Data
 {
+    long id;
     float t;
     float h;
     char sensorname[Sensornamesize];
@@ -27,7 +28,7 @@ public:
     ~Sensorlist();
     float getT(void);
     float getH(void);
-    void add(/*t*/ float t, /*h*/ float h, long valuetime, long sensorid, char sensorname[Sensornamesize]);
+    void add(long id,/*t*/ float t, /*h*/ float h, long valuetime, long sensorid, char sensorname[Sensornamesize]);
     void add(Data d);
     void list(void);
     void clear(void);
@@ -47,7 +48,12 @@ int Sensorlist::getSize()
 {
     return size;
 }
-
+/**
+ * @brief 
+ * 
+ * ID ต้องใส่มาตลอด
+ * @return String 
+ */
 String Sensorlist::toJson()
 {
     firstIndex();
@@ -63,6 +69,7 @@ String Sensorlist::toJson()
 
         buf += "{";
         buf += "\"t\":\"" + String(p->t) + "\",";
+        buf += "\"id\":\"" + String(p->id) + "\",";
         buf += "\"h\":\"" + String(p->h) + "\",";
         buf += "\"sensorid\":\"" + String(p->sensorid) + "\",";
         buf += "\"valuetime\":\"" + String(p->valuetime) + "\",";
@@ -71,12 +78,13 @@ String Sensorlist::toJson()
 
         p = next();
     }
-    buf + "]";
+    buf += "]";
     return buf;
 }
 Sensorlist::~Sensorlist()
 {
 }
+
 Data *Sensorlist::getByid(long id)
 {
     Data *find = first;
@@ -90,7 +98,7 @@ Data *Sensorlist::getByid(long id)
         find = find->next;
     }
 }
-void Sensorlist::add(float t, float h, long valuetime, long sensorid, char sensorname[Sensornamesize])
+void Sensorlist::add(long id,float t, float h, long valuetime, long sensorid, char sensorname[Sensornamesize])
 {
 
     if (index == NULL)
@@ -111,13 +119,12 @@ void Sensorlist::add(float t, float h, long valuetime, long sensorid, char senso
         tail->pre = index;
         index = tail;
     }
-
+    index->id = id;
     index->h = h;
     index->t = t;
     index->valuetime = valuetime;
     index->sensorid = sensorid;
     memcpy(index->sensorname, sensorname, Sensornamesize);
-
     size++;
 }
 Data *Sensorlist::get(int index)
